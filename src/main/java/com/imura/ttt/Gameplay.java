@@ -9,14 +9,10 @@ import javafx.scene.shape.Rectangle;
 public class Gameplay {
     @FXML
     private VBox mainCanvas;
-    private Rectangle[] board;
-    private HBox[] rows;
-
-    private int increment = 0;
 
     public void initialize() {
-        rows = new HBox[3];
-        board = new Rectangle[9];
+        HBox[] rows = new HBox[3];
+        Rectangle[] board = new Rectangle[9];
         for (int i = 0; i < 3; i++) {
             rows[i] = (HBox) mainCanvas.getChildren().get(i);
             for (int j = 0; j < 3; j++) {
