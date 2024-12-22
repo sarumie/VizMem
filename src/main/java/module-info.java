@@ -1,4 +1,4 @@
-module com.imura.ttt {
+module com.imura.VizMem {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -7,6 +7,6 @@ module com.imura.ttt {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
 
-    opens com.imura.ttt to javafx.fxml;
-    exports com.imura.ttt;
+    opens com.imura.VizMem to javafx.fxml;
+    exports com.imura.VizMem;
 }

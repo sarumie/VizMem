@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="371.0" prefWidth="671.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.imura.VizMem.GameplayController">
+   <children>
+      <VBox fx:id="mainCanvas" layoutX="86.0" layoutY="61.0" prefHeight="250.0" prefWidth="250.0" spacing="8.0">
+         <HBox spacing="8.0">
+            <Rectangle fill="#e0f2fe" height="78.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+            <Rectangle fill="#e0f2fe" height="78.0" layoutX="10.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+            <Rectangle fill="#e0f2fe" height="78.0" layoutX="210.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+         </HBox>
+         <HBox layoutX="10.0" layoutY="10.0" spacing="8.0">
+            <Rectangle fill="#e0f2fe" height="78.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+            <Rectangle fill="#e0f2fe" height="78.0" layoutX="10.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+            <Rectangle fill="#e0f2fe" height="78.0" layoutX="210.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+         </HBox>
+         <HBox layoutX="10.0" layoutY="118.0" spacing="8.0">
+            <children>
+               <Rectangle fill="#e0f2fe" height="78.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+               <Rectangle fill="#e0f2fe" height="78.0" layoutX="10.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+               <Rectangle fill="#e0f2fe" height="78.0" layoutX="210.0" layoutY="10.0" stroke="#bbe7fc00" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="78.0" />
+            </children>
+         </HBox>
+      </VBox>
+      <Text fx:id="currRoundText" layoutX="185.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Round 24" />
+      <Text layoutX="371.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Record:" />
+      <Text fx:id="bestRecordText" layoutX="371.0" layoutY="198.0" strokeType="OUTSIDE" strokeWidth="0.0" text="30 round" />
+   </children>
+
+</AnchorPane>

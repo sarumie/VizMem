@@ -1,4 +1,4 @@
-package com.imura.ttt;
+package com.imura.VizMem;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,10 +7,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class VizMem extends Application {
+public class Main extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(VizMem.class.getResource("gameplay.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("gameplay.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Visual Memory Test");
         stage.setScene(scene);

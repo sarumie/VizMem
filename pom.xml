@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.imura</groupId>
-    <artifactId>ttt</artifactId>
+    <artifactId>VizMem</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>ttt</name>
 
@@ -91,7 +91,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.imura.ttt/com.imura.ttt.VizMem</mainClass>
+                            <mainClass>com.imura.VizMem/com.imura.VizMem.Main</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
