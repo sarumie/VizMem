@@ -13,6 +13,10 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static com.imura.VizMem.Utils.getAddedArrOfInt;
 
 public class GameplayController {
@@ -28,8 +32,12 @@ public class GameplayController {
     private int currRound = 1, currStepIdx = 0, isPlaying = 0;
     private int[] targetSteps;
     private Timeline timelinePreview;
+    private Connection conn;
+    private int historyID;
 
     public void initialize() {
+        conn = new DatabaseManager().getConnection();
+
         for (int i = 0; i < 3; i++) {
             rows[i] = (HBox) mainCanvas.getChildren().get(i);
             for (int j = 0; j < 3; j++) {
@@ -49,7 +57,29 @@ public class GameplayController {
         disableBoard();
         timelinePreview = new Timeline();
 
-        targetSteps = currRound == 1 ? new int[]{(int) (Math.random() * 9) + 1} : getAddedArrOfInt(targetSteps, (int) (Math.random() * 9) + 1);
+
+        if (currRound == 1) {
+            targetSteps = new int[]{(int) (Math.random() * 9) + 1};
+            historyID = (int) (Math.random() * 900000000) + 100000000;
+            try {
+                conn.createStatement().executeUpdate("INSERT INTO history (id, peak_round) VALUES (" + historyID + ", " + currRound + ")");
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+            }
+        } else {
+            targetSteps = getAddedArrOfInt(targetSteps, (int) (Math.random() * 9) + 1);
+            try {
+                conn.createStatement().executeUpdate("UPDATE history SET peak_round = " + currRound + " WHERE id = " + currRound);
+            } catch (SQLException ex) {
+                System.out.println("SQLException: " + ex.getMessage());
+            }
+        }
+
+        try {
+            conn.createStatement().executeUpdate("UPDATE history SET peak_round = " + currRound + " WHERE id = " + historyID);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
 
         for (int i = 0; i < targetSteps.length; i++) {
             Rectangle r = (Rectangle) mainCanvas.lookup("#board_" + targetSteps[i]);
@@ -73,10 +103,20 @@ public class GameplayController {
         resetBoard();
         disableBoard();
         playOrStopButton.setText("Play");
-        bestRecordText.setText(currRound + " round");
+        setBestRecordText();
         currStepIdx = 0;
         currRound = 1;
         currRoundText.setText("Round " + currRound);
+    }
+
+    public void setBestRecordText() {
+        try {
+            ResultSet rs = conn.createStatement().executeQuery("SELECT MAX(peak_round) FROM history WHERE id = " + historyID);
+            rs.next();
+            bestRecordText.setText(rs.getString(1) + " round");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public void disableBoard() {
@@ -106,6 +146,7 @@ public class GameplayController {
                 currRoundText.setText("Round " + ++currRound);
                 currStepIdx = 0;
                 new Timeline(new KeyFrame(Duration.millis(800), eKeyFrame -> previewRound())).play();
+                setBestRecordText();
             }
         } else {
             stopRound();
