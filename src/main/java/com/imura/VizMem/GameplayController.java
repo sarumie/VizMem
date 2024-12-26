@@ -13,8 +13,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import static com.imura.VizMem.Utils.setTimeout;
-
 public class GameplayController {
     @FXML
     private VBox mainCanvas;
@@ -23,7 +21,7 @@ public class GameplayController {
     @FXML
     private Text bestRecordText;
     @FXML
-    private Button playAndStopButton;
+    private Button playOrStopButton;
 
     HBox[] rows = new HBox[3];
     Rectangle[] board = new Rectangle[9];
@@ -32,7 +30,6 @@ public class GameplayController {
     int isPlaying = 0;
 
     //    Initialize the board
-
     public void initialize() {
         for (int i = 0; i < 3; i++) {
             rows[i] = (HBox) mainCanvas.getChildren().get(i);
@@ -47,37 +44,33 @@ public class GameplayController {
             r.setId("board_" + (i + 1));
         }
 
-//        dissable board prevent user to click the board
         disableBoard();
 
 //        re-color button
-        playAndStopButton.setBackground(Background.fill(Color.web("0284C7")));
-        playAndStopButton.setTextFill(Color.web("F0F9FF"));
+        playOrStopButton.setBackground(Background.fill(Color.web("0284C7")));
+        playOrStopButton.setTextFill(Color.web("F0F9FF"));
     }
 
     public void previewRound() {
+//        TODO: add the targetSteps incrementally and not replace the whole array
         targetSteps = new int[currRound];
         currSteps = new int[currRound];
         currRoundText.setText("Round " + currRound);
-
-        resetBoard();
-
+        disableBoard();
         Timeline timeline = new Timeline();
+
         for (int i = 0; i < currRound; i++) {
             int randNum = (int) (Math.random() * 9) + 1;
             targetSteps[i] = randNum;
             Rectangle r = (Rectangle) mainCanvas.lookup("#board_" + randNum);
 
-            KeyFrame startFrame = new KeyFrame(Duration.millis(i * 1000), e -> r.setFill(Color.web("38BDF8")));
-            KeyFrame endFrame = new KeyFrame(Duration.millis(i * 1000 + 1000), e -> r.setFill(Color.web("E0F2FE")));
-
-            timeline.getKeyFrames().addAll(startFrame, endFrame);
+            timeline.getKeyFrames()
+                    .addAll(new KeyFrame(Duration.millis(i * 1000), e -> r.setFill(Color.web("38BDF8"))),
+                            new KeyFrame(Duration.millis(i * 1000 + 500), e -> r.setFill(Color.web("E0F2FE"))));
         }
 
         timeline.setOnFinished(e -> enableBoard());
         timeline.play();
-
-
     }
 
     public boolean isCorrectStep(int step) {
@@ -93,25 +86,28 @@ public class GameplayController {
     public void stopRound() {
         resetBoard();
         disableBoard();
-        playAndStopButton.setText("Play");
+        playOrStopButton.setText("Play");
         bestRecordText.setText(currRound + " round");
         currStepIdx = 0;
         currRound = 1;
         currRoundText.setText("Round " + currRound);
     }
 
+    //    dissable board prevent user to click the board
     public void disableBoard() {
         for (Rectangle r : board) {
             r.setDisable(true);
         }
     }
 
+    //    enable board to allow user to click the board
     public void enableBoard() {
         for (Rectangle r : board) {
             r.setDisable(false);
         }
     }
 
+    //    reset the board color
     public void resetBoard() {
         for (Rectangle r : board) {
             r.setFill(Color.web("E0F2FE"));
@@ -123,7 +119,7 @@ public class GameplayController {
         Rectangle nSource = (Rectangle) e.getSource();
         new Timeline(
                 new KeyFrame(Duration.ZERO, eKeyFrame -> nSource.setFill(Color.web("38BDF8"))),
-                new KeyFrame(Duration.millis(300), eKeyFrame -> nSource.setFill(Color.web("E0F2FE")))
+                new KeyFrame(Duration.millis(150), eKeyFrame -> nSource.setFill(Color.web("E0F2FE")))
         ).play();
 
 //        getID of the rectangle and get the string after the underscore
@@ -135,27 +131,24 @@ public class GameplayController {
                 ++currRound;
                 currRoundText.setText("Round " + currRound);
                 currStepIdx = 0;
-                previewRound();
+                new Timeline(
+                        new KeyFrame(Duration.millis(800), eKeyFrame -> previewRound())
+                ).play();
             }
 
             currSteps[currStepIdx] = boardNumber;
         } else {
             stopRound();
+            playOrStopButton.setText("Play");
+            isPlaying = 0;
         }
-
-//        Change the color of the rectangle when clicked
-//        if (nSource.getFill().equals(Color.web("E0F2FE"))) {
-//            nSource.setFill(Color.web("38BDF8"));
-//        } else {
-//            nSource.setFill(Color.web("E0F2FE"));
-//        }
     }
 
     @FXML
-    public void onPlayAndStopButtonClick() {
+    public void onPlayOrStopButtonClick() {
         if (isPlaying == 0) {
             System.out.println("Play button clicked");
-            playAndStopButton.setText("Stop");
+            playOrStopButton.setText("Stop");
             previewRound();
             isPlaying = 1;
         } else {
