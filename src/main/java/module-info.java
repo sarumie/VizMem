@@ -7,6 +7,7 @@ module com.imura.VizMem {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires static lombok;
+    requires java.sql;
 
     opens com.imura.VizMem to javafx.fxml;
     exports com.imura.VizMem;
