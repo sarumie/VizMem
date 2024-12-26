@@ -13,6 +13,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import static com.imura.VizMem.Utils.getAddedArrOfInt;
+
 public class GameplayController {
     @FXML
     private VBox mainCanvas;
@@ -28,6 +30,7 @@ public class GameplayController {
     int currRound = 1, currStepIdx = 0;
     int[] targetSteps, currSteps;
     int isPlaying = 0;
+    Timeline timeline;
 
     //    Initialize the board
     public void initialize() {
@@ -53,17 +56,20 @@ public class GameplayController {
 
     public void previewRound() {
 //        TODO: add the targetSteps incrementally and not replace the whole array
-        targetSteps = new int[currRound];
         currSteps = new int[currRound];
         currRoundText.setText("Round " + currRound);
         disableBoard();
-        Timeline timeline = new Timeline();
+        timeline = new Timeline();
 
-        for (int i = 0; i < currRound; i++) {
-            int randNum = (int) (Math.random() * 9) + 1;
-            targetSteps[i] = randNum;
-            Rectangle r = (Rectangle) mainCanvas.lookup("#board_" + randNum);
+        if (currRound == 1) {
+            targetSteps = new int[1];
+            targetSteps[0] = (int) (Math.random() * 9) + 1;
+        } else {
+            targetSteps = getAddedArrOfInt(targetSteps, (int) (Math.random() * 9) + 1);
+        }
 
+        for (int i = 0; i < targetSteps.length; i++) {
+            Rectangle r = (Rectangle) mainCanvas.lookup("#board_" + targetSteps[i]);
             timeline.getKeyFrames()
                     .addAll(new KeyFrame(Duration.millis(i * 1000), e -> r.setFill(Color.web("38BDF8"))),
                             new KeyFrame(Duration.millis(i * 1000 + 500), e -> r.setFill(Color.web("E0F2FE"))));
