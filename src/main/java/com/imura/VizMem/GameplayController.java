@@ -48,6 +48,7 @@ public class GameplayController {
             }
         }
         disableBoard();
+        setBestRecordText();
         playOrStopButton.setBackground(Background.fill(Color.web("0284C7")));
         playOrStopButton.setTextFill(Color.web("F0F9FF"));
     }
@@ -56,7 +57,6 @@ public class GameplayController {
         currRoundText.setText("Round " + currRound);
         disableBoard();
         timelinePreview = new Timeline();
-
 
         if (currRound == 1) {
             targetSteps = new int[]{(int) (Math.random() * 9) + 1};
@@ -111,7 +111,7 @@ public class GameplayController {
 
     public void setBestRecordText() {
         try {
-            ResultSet rs = conn.createStatement().executeQuery("SELECT MAX(peak_round) FROM history WHERE id = " + historyID);
+            ResultSet rs = conn.createStatement().executeQuery("SELECT MAX(peak_round) FROM history");
             rs.next();
             bestRecordText.setText(rs.getString(1) + " round");
         } catch (SQLException ex) {
