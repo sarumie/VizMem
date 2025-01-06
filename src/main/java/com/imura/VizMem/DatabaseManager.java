@@ -10,6 +10,15 @@ public class DatabaseManager {
     DatabaseManager() {
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/vizmem", "root", "");
+            conn.createStatement().executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS history
+                    (
+                        id         int                     not null primary key,
+                        peak_round int                     not null,
+                        level      int                     not null,
+                        updated_at timestamp default NOW() not null,
+                        created_at timestamp default NOW() not null
+                    )""");
         } catch (SQLException e) {
             System.out.println("SQLException: " + e.getMessage());
             System.out.println("SQLState: " + e.getSQLState());

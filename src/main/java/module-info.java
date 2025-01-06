@@ -12,4 +12,6 @@ module com.imura.VizMem {
 
     opens com.imura.VizMem to javafx.fxml;
     exports com.imura.VizMem;
+    exports com.imura.VizMem.Controller;
+    opens com.imura.VizMem.Controller to javafx.fxml;
 }
