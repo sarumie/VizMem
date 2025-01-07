@@ -25,7 +25,7 @@ public class Gameplay {
     private static int totalTiles;
     @Getter
     private int[] targetSteps;
-    private Connection conn;
+    private final Connection conn;
     private int historyID;
     /**
      * 0: not set/invalid
@@ -70,6 +70,7 @@ public class Gameplay {
                 conn.createStatement().executeUpdate("INSERT INTO history (id, peak_round, difficulty) VALUES (" + historyID + ", " + currRound + ", " + difficulty + ")");
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
+                System.exit(1);
             }
         } else {
             targetSteps = getAddedArrOfInt(targetSteps, (int) (Math.random() * totalTiles) + 1);
@@ -77,6 +78,7 @@ public class Gameplay {
                 conn.createStatement().executeUpdate("UPDATE history SET peak_round = " + currRound + " WHERE id = " + historyID);
             } catch (SQLException ex) {
                 System.out.println("SQLException: " + ex.getMessage());
+                System.exit(1);
             }
         }
     }
@@ -89,7 +91,7 @@ public class Gameplay {
         return correct;
     }
 
-    public boolean advanceStep() {
+    public boolean isNextStep() {
         if (currStepIdx == currRound) {
             currRound++;
             currStepIdx = 0;
