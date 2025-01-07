@@ -36,11 +36,20 @@
                   </VBox>
                </children>
             </HBox>
-            <Button fx:id="playOrStopButton" mnemonicParsing="false" onMouseClicked="#onPlayOrStopButtonClick" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: #0284C7;" text="Play" textFill="#f0f9ff">
-               <font>
-                  <Font name="Inter Medium" size="16.0" />
-               </font>
-            </Button>
+            <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="128.0">
+               <children>
+                  <Button fx:id="playOrStopButton" mnemonicParsing="false" onMouseClicked="#onPlayOrStopButtonClick" prefHeight="40.0" prefWidth="250.0" style="-fx-background-color: #0284C7;" text="Play" textFill="#f0f9ff">
+                     <font>
+                        <Font name="Inter Medium" size="16.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="backBtn" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onMouseClicked="#onBackBtnClick" prefHeight="40.0" style="-fx-background-color: #E2E8F0;" text="Back to Menu" textFill="#0f172a">
+                     <font>
+                        <Font name="Inter Medium" size="16.0" />
+                     </font>
+                  </Button>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>
