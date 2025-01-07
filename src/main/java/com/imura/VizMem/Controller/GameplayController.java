@@ -1,17 +1,27 @@
 package com.imura.VizMem.Controller;
 
 import com.imura.VizMem.Gameplay;
+import com.imura.VizMem.Main;
+import com.imura.VizMem.Utils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
 
 public class GameplayController {
     @FXML
@@ -19,23 +29,22 @@ public class GameplayController {
     @FXML
     private Text currRoundText, bestRecordText;
     @FXML
-    private Button playOrStopButton;
+    private Button playOrStopButton, backBtn;
 
     private Rectangle[] tiles;
     private Gameplay gameplay;
     private Timeline timelinePreview;
-    private String postFixTitle;
+    private String diffTitle;
 
     public void initialize() {
         gameplay = new Gameplay();
         tiles = new Rectangle[Gameplay.getTotalTiles()];
-
-        switch (Gameplay.getDifficulty()) {
-            case 1 -> postFixTitle = "Easy";
-            case 2 -> postFixTitle = "Medium";
-            case 3 -> postFixTitle = "Hard";
-            case 0 -> throw new RuntimeException("Invalid difficulty");
-        }
+        diffTitle = switch (Gameplay.getDifficulty()) {
+            case 1 -> "Easy";
+            case 2 -> "Medium";
+            case 3 -> "Hard";
+            default -> throw new RuntimeException("Invalid difficulty level");
+        };
         syncCurrRoundText();
         for (int i = 0; i < Gameplay.getTilesXLength(); i++) {
             HBox row = new HBox();
@@ -65,11 +74,13 @@ public class GameplayController {
         for (int i = 0; i < gameplay.getTargetSteps().length; i++) {
             Rectangle tile = (Rectangle) mainCanvas.lookup("#tile_" + gameplay.getTargetSteps()[i]);
             timelinePreview.getKeyFrames().addAll(
-                    new KeyFrame(Duration.millis(i * 1000), e -> tile.setFill(Color.web("#38BDF8"))),
+                    new KeyFrame(Duration.millis(i * 1000), e -> {
+                        tile.setFill(Color.web("#38BDF8"));
+                        Utils.playSound("preview.wav");
+                    }),
                     new KeyFrame(Duration.millis(i * 1000 + 500), e -> tile.setFill(Color.web("#E0F2FE")))
             );
         }
-
         timelinePreview.setOnFinished(e -> enableTiles());
         timelinePreview.play();
     }
@@ -86,7 +97,7 @@ public class GameplayController {
     }
 
     public void syncCurrRoundText() {
-        currRoundText.setText("Round " + gameplay.getCurrRound() + " (" + postFixTitle + ")");
+        currRoundText.setText("Round " + gameplay.getCurrRound() + " (" + diffTitle + ")");
     }
 
     public void setBestRecordText() {
@@ -106,10 +117,14 @@ public class GameplayController {
     }
 
     @FXML
-    public void onTileClick(Event e) {
-        Rectangle nSource = (Rectangle) e.getSource();
-        int boardNumber = Integer.parseInt(nSource.getId().split("_")[1]);
+    public void onTileClick(MouseEvent event) {
+        if (!(event.getButton().equals(MouseButton.PRIMARY)) || event.getClickCount() > 1) {
+            return;
+        }
+
         timelinePreview.stop();
+        Rectangle nSource = (Rectangle) event.getSource();
+        int boardNumber = Integer.parseInt(nSource.getId().split("_")[1]);
 
         if (gameplay.isCorrectStep(boardNumber)) {
             Timeline tileTimeline = new Timeline(
@@ -118,32 +133,59 @@ public class GameplayController {
             );
             tileTimeline.play();
 
-            if (gameplay.advanceStep()) {
+            if (gameplay.isNextStep()) {
+                Utils.playSound("next_round.wav");
                 syncCurrRoundText();
                 setBestRecordText();
                 tileTimeline.setOnFinished(eKeyFrame -> new Timeline(new KeyFrame(Duration.millis(300), eKeyFrame2 -> previewRound())).play());
+                return;
             }
-        } else {
-            new Timeline(
-                    new KeyFrame(Duration.ZERO, eKeyFrame -> nSource.setFill(Color.web("#F87171"))),
-                    new KeyFrame(Duration.millis(200), eKeyFrame -> nSource.setFill(Color.web("#E0F2FE")))
-            ).play();
-            stopRound();
+//            Utils.playSound(Math.random() < 0.5 ? "preview.wav" : "correct.wav");
+            Utils.playSound("correct.wav");
+            return;
         }
+
+//            if step incorrect:
+        Utils.playSound("incorrect.wav");
+        new Timeline(
+                new KeyFrame(Duration.ZERO, eKeyFrame -> nSource.setFill(Color.web("#F87171"))),
+                new KeyFrame(Duration.millis(200), eKeyFrame -> nSource.setFill(Color.web("#E0F2FE")))
+        ).play();
+        stopRound();
     }
 
     @FXML
     public void onPlayOrStopButtonClick() {
-        if (!gameplay.isPlaying()) {
-            gameplay = new Gameplay();
-            playOrStopButton.setText("Stop");
-            playOrStopButton.setTextFill(Color.web("#450A0A"));
-            playOrStopButton.setStyle("-fx-background-color: #FCA5A5");
-            previewRound();
-            gameplay.startGame();
-        } else {
+        if (gameplay.isPlaying()) {
+            Utils.playSound("stop.wav");
             timelinePreview.stop();
             stopRound();
+            return;
         }
+
+        Utils.playSound("start.wav");
+        gameplay = new Gameplay();
+        playOrStopButton.setText("Stop");
+        playOrStopButton.setTextFill(Color.web("#450A0A"));
+        playOrStopButton.setStyle("-fx-background-color: #FCA5A5");
+        previewRound();
+        gameplay.startGame();
+    }
+
+    @FXML
+    public void onBackBtnClick() throws IOException {
+        Utils.playSound("back.wav");
+        stopRound();
+        Stage currStage = (Stage) backBtn.getScene().getWindow();
+        currStage.close();
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("menu.fxml"));
+        Stage stage = new Stage();
+        Parent root1 = fxmlLoader.load();
+        stage.initModality(currStage.getModality());
+        stage.initOwner(currStage);
+        stage.setTitle("VizMem");
+        stage.setScene(new Scene(root1));
+        stage.getIcons().add(new Image("icon.jpg"));
+        stage.show();
     }
 }
