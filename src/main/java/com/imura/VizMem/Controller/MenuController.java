@@ -2,11 +2,13 @@ package com.imura.VizMem.Controller;
 
 import com.imura.VizMem.Gameplay;
 import com.imura.VizMem.Main;
+import com.imura.VizMem.Utils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,6 +24,8 @@ public class MenuController {
     }
 
     private void handleButtonClick(int difficulty) {
+        Utils.playSound("select_diff.wav");
+
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("gameplay.fxml"));
         Stage currStage = (Stage) easyBtn.getScene().getWindow();
         try {
@@ -37,6 +41,8 @@ public class MenuController {
                 default -> throw new RuntimeException("Invalid difficulty");
             });
             stage.setScene(new Scene(root1));
+            currStage.close();
+            stage.getIcons().add(new Image("icon.jpg"));
             stage.show();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
